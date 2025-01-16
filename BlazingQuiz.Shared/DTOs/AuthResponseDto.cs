@@ -11,6 +11,6 @@ namespace BlazingQuiz.Shared.DTOs
     {
 
         [JsonIgnore]
-        public bool IsErroe => ErrorMessage!=null;
+        public bool IsError => ErrorMessage!=null;
     }
 }

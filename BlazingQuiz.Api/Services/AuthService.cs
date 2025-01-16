@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims
+using System.Security.Claims;
 
 using System.Text;
 
@@ -17,7 +17,7 @@ namespace BlazingQuiz.Api.Services
         private readonly IPasswordHasher<User> _passwordHasher;
         private readonly IConfiguration configuration;
 
-        public AuthService(QuizContext context, PasswordHasher<User> passwordHasher,IConfiguration configuration)
+        public AuthService(QuizContext context, IPasswordHasher<User> passwordHasher,IConfiguration configuration)
         {
             _context = context;
             _passwordHasher = passwordHasher;
@@ -47,11 +47,10 @@ namespace BlazingQuiz.Api.Services
             //Generate a token
             var token = GenerateToken(user, configuration);
 
-            if (result == PasswordVerificationResult.SuccessRehashNeeded)
-            {
-                return new AuthResponseDto(token, ErrorMessage: "Invalid UserName or Password");
 
-            }
+            return new AuthResponseDto(token);
+
+            
 
         }
 
