@@ -1,5 +1,6 @@
 using BlazingQuiz.Api.Data;
 using BlazingQuiz.Api.Data.Entities;
+using BlazingQuiz.Api.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -18,6 +19,7 @@ builder.Services.AddDbContext<QuizContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("BlazingQuiz"));
 });
 
+builder.Services.AddTransient<AuthService>();
 var app = builder.Build();
 
 
