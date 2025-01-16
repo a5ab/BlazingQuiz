@@ -49,3 +49,4 @@ namespace BlazingQuiz.Api.Data
     }
 
 }
+
