@@ -1,0 +1,55 @@
+﻿@page "/auth/login"
+
+@layout EmptyLayout
+
+<div class="container">
+    <div class="row vh-100">
+        <div class="col-sm-4 mx-auto my-auto">
+
+            <div class="my-3">
+                <h1>Login | Blazing Quiz</h1>
+            </div>
+            <EditForm Model="loginModel" OnValidSubmit="LoginAsync">
+                <DataAnnotationsValidator/>
+
+                <div class="mb-3">
+                    <label class="form-label">UserName:</label>
+                    <InputText @bind-Value="loginModel.UserName" class="form-control"/>
+                    <ValidationMessage For="()=>loginModel.UserName"/>
+                </div>                
+                <div class="mb-3">
+                    <label class="form-label">Password:</label>
+                    <InputText type="password" @bind-Value="loginModel.Password" class="form-control" />
+                    <ValidationMessage For="()=>loginModel.Password" />
+
+                </div>
+                <div class="mb-3">
+                    @if (_isBusy)
+                    {
+                        <button type="button" disabled class="btn btn-success">Logining...</button>
+                    }
+                    else{
+                        <button type="submit" class="btn btn-success">Login</button>
+
+                    }
+                </div>
+
+            </EditForm>
+        </div>
+    </div>
+</div>
+
+@code {
+    private LoginDto loginModel = new();
+    private bool _isBusy;
+    private async Task LoginAsync()
+    {
+        _isBusy = true;
+
+        await Task.Delay(3000);
+
+        _isBusy = false;
+
+    }
+
+}
