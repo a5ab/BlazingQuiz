@@ -16,11 +16,14 @@ namespace BlazingQuiz.Api.Endpoints
                 var result = await authService.LoginAsync(dto);
                 if (result.IsError)
                 {
-                    return Results.BadRequest(result);
+                    return Results.BadRequest($"{result.ErrorMessage}");
+                }
+                else
+                {
+                    return Results.Ok($"{result.Token}");
                 }
 
-
-                return Results.Ok(result);
+                
             });
 
 

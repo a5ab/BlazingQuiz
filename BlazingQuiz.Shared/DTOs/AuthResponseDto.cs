@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace BlazingQuiz.Shared.DTOs
 {
-    public record AuthResponseDto(string Token, string? ErrorMessage=null)
+    public record AuthResponseDto(string Token, string? ErrorMessage)
     {
 
         [JsonIgnore]

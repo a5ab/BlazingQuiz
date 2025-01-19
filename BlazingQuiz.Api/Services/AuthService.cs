@@ -48,7 +48,7 @@ namespace BlazingQuiz.Api.Services
             var token = GenerateToken(user, configuration);
 
 
-            return new AuthResponseDto(token);
+            return new AuthResponseDto(token, ErrorMessage:"This is the token");
 
             
 

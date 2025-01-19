@@ -44,6 +44,17 @@ builder.Services.AddAuthentication(option =>
 
 });
 
+builder.Services.AddCors(options=>
+{
+    options.AddDefaultPolicy(builderCors =>
+    {
+        var AllowedOrigins = builder.Configuration.GetValue<string>("AllowedOrigins");
+        builderCors
+        .WithOrigins(AllowedOrigins)
+        .AllowAnyMethod()
+        .AllowAnyHeader();
+    });
+});
 
 builder.Services.AddTransient<AuthService>();
 
@@ -64,6 +75,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseCors();
 
 app.MapAuthEndpoints();
 
