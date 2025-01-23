@@ -11,23 +11,13 @@ namespace BlazingQuiz.Api.Endpoints
 
         public static IEndpointRouteBuilder MapAuthEndpoints(this IEndpointRouteBuilder app)
         {
-            app.MapPost(Login, async (LoginDto dto, AuthService authService) =>
-            {
-                var result = await authService.LoginAsync(dto);
-                if (result.IsError)
-                {
-                    return Results.BadRequest($"{result.ErrorMessage}");
-                }
-                else
-                {
-                    return Results.Ok($"{result.Token}");
-                }
-
-                
-            });
+            app.MapPost(Login, async (LoginDto dto, AuthService authService) => Results.Ok(await authService.LoginAsync(dto)));
 
 
-            return app;
+                return app;
+
+
         }
+
     }
 }

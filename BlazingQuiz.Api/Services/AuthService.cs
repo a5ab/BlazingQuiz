@@ -1,5 +1,6 @@
 ﻿using BlazingQuiz.Api.Data;
 using BlazingQuiz.Api.Data.Entities;
+using BlazingQuiz.Shared;
 using BlazingQuiz.Shared.DTOs;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -32,7 +33,7 @@ namespace BlazingQuiz.Api.Services
 
             if (user == null)
             {
-                return new AuthResponseDto(default,ErrorMessage: "Invalid UserName or Password");
+                return new AuthResponseDto(null,ErrorMessage: "Invalid UserName or Password");
             }
 
             //Get the hashed password and compare it with the password in the dto
@@ -40,15 +41,15 @@ namespace BlazingQuiz.Api.Services
 
             if (result == PasswordVerificationResult.Failed)
             {
-                return new AuthResponseDto(default, ErrorMessage: "Invalid UserName or Password");
+                return new AuthResponseDto(null, ErrorMessage: "Invalid UserName or Password");
 
             }
 
             //Generate a token
             var token = GenerateToken(user, configuration);
+            var loggedInUser = new LoggedInUser(user.Id, user.Name, user.Role, token);
 
-
-            return new AuthResponseDto(token, ErrorMessage:"This is the token");
+            return new AuthResponseDto(loggedInUser);
 
             
 
@@ -66,10 +67,10 @@ namespace BlazingQuiz.Api.Services
             new Claim(ClaimTypes.Role,user.Role)
         };
 
-            var secret = configuration.GetValue<string>("JWT:secret");
-            var key = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(secret));
+            var secretKey = configuration.GetValue<string>("JWT:secret");
+            var symmetrickey = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(secretKey));
 
-            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+            var creds = new SigningCredentials(symmetrickey, SecurityAlgorithms.HmacSha256);
 
             var jwtsecuritytoken = new JwtSecurityToken(
                 issuer: configuration.GetValue<string>("JWT:issuer"),

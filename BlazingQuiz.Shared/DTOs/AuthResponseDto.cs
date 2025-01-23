@@ -7,10 +7,10 @@ using System.Threading.Tasks;
 
 namespace BlazingQuiz.Shared.DTOs
 {
-    public record AuthResponseDto(string Token, string? ErrorMessage)
+    public record AuthResponseDto(LoggedInUser? User, string? ErrorMessage = null)
     {
 
         [JsonIgnore]
-        public bool IsError => ErrorMessage!=null;
+        public bool HasError => ErrorMessage!=null;
     }
 }

@@ -4,6 +4,8 @@
 @inject NavigationManager NavigationManager
 @inject IAuthApi AuthApi
 
+@inject QuizAuthStateProvider QuizAuthStateProvider
+
 <div class="container">
     <div class="row vh-100">
         <div class="col-sm-4 mx-auto my-auto">
@@ -11,25 +13,38 @@
             <div class="my-3">
                 <h1>Login | Blazing Quiz</h1>
             </div>
-            <EditForm Model="loginModel" OnValidSubmit="LoginAsync">
+            <AuthorizeView>
+                <Authorizing>
+                    <p>Authorizing...</p>
+                </Authorizing>
+
+                <Authorized>
+                    <p>You are authorized!</p>
+                </Authorized>
+
+                <NotAuthorized>
+                    <p>Not Authorized: @context.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)?.Value </p>
+                </NotAuthorized>
+            </AuthorizeView>
+            <EditForm Model="_model" OnValidSubmit="LoginAsync">
                 <DataAnnotationsValidator/>
 
                 <div class="mb-3">
                     <label class="form-label">UserName:</label>
-                    <InputText @bind-Value="loginModel.UserName" class="form-control"/>
-                    <ValidationMessage For="()=>loginModel.UserName"/>
+                    <InputText @bind-Value="_model.UserName" class="form-control" />
+                    <ValidationMessage For="()=>_model.UserName" />
                 </div>                
                 <div class="mb-3">
                     <label class="form-label">Password:</label>
-                    <InputText type="password" @bind-Value="loginModel.Password" class="form-control" />
-                    <ValidationMessage For="()=>loginModel.Password" />
+                    <InputText type="password" @bind-Value="_model.Password" class="form-control" />
+                    <ValidationMessage For="()=>_model.Password" />
 
                 </div>
 
-                @if(_errorMessage != null)
+                @if(_error != null)
                 {
                     <div class="mb-3 bg-danger text-white p-3" role="alert">
-                    <p>@_errorMessage</p>
+                        <p>@_error</p>
                     </div>
                 }
 
@@ -50,29 +65,30 @@
 </div>
 
 @code {
-    private LoginDto loginModel = new();
+    private LoginDto _model = new();
     private bool _isBusy;
-    private string? _errorMessage=null;
+    private string? _error;
 
     private async Task LoginAsync()
     {
         _isBusy = true;
-        _errorMessage = null;
-        
+        _error = null;
+
         try
         {
-            var response = await AuthApi.LoginAsync(loginModel);
-            if (response.IsError)
+            var authresponse = await AuthApi.LoginAsync(_model);
+            if (authresponse.HasError)
             {
-                _errorMessage= response.ErrorMessage;
-                
+                _error = authresponse.ErrorMessage;
+                return;
             }
-
+            var loggedInUser = authresponse.User;
+            await QuizAuthStateProvider.SetLoginAsync(loggedInUser);
             NavigationManager.NavigateTo("/");
         }
         catch (Exception ex)
         {
-            //_errorMessage = ex.Message;
+            _error = ex.Message;
         }
 
         finally

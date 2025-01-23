@@ -30,11 +30,11 @@ builder.Services.AddAuthentication(option =>
 
 }).AddJwtBearer(option =>
 {
-    var secret = builder.Configuration.GetValue<string>("JWT:secret");
-    var key = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(secret));
+    var secretKey = builder.Configuration.GetValue<string>("JWT:secret");
+    var symmetrickey = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(secretKey));
     option.TokenValidationParameters = new TokenValidationParameters
     {
-        IssuerSigningKey = key,
+        IssuerSigningKey = symmetrickey,
         ValidIssuer = builder.Configuration.GetValue<string>("JWT:issuer"),
         ValidAudience = builder.Configuration.GetValue<string>("JWT:audience"),
         ValidateIssuer = true,
@@ -48,7 +48,8 @@ builder.Services.AddCors(options=>
 {
     options.AddDefaultPolicy(builderCors =>
     {
-        var AllowedOrigins = builder.Configuration.GetValue<string>("AllowedOrigins");
+        var AllowedOriginsStr = builder.Configuration.GetValue<string>("AllowedOrigins");
+        var AllowedOrigins = AllowedOriginsStr.Split(",",StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
         builderCors
         .WithOrigins(AllowedOrigins)
         .AllowAnyMethod()
@@ -75,6 +76,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseAuthentication();
 
 app.UseCors();
 
